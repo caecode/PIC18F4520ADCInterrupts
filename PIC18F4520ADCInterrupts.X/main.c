@@ -76,11 +76,13 @@ void interrupt isr(void){
     //ADC interrupt flag
     if(PIR1bits.ADIF==1){
         
+        //clear the flag
         PIR1bits.ADIF=0;
         
         // Conversion finished, return the result. Light the LEDs
         LATD=((ADRESH << 8) + ADRESL);
         
+        //start conversion
         ADCON0bits.GO_DONE=1;
     }
     
@@ -100,7 +102,6 @@ void main(void) {
     
     //Line 2: Set vdd and vss as vrefs. Set AN0 as the A/D port
     ADCON1=0x0E;
-    
     
     // Line 3: Right Justified format, Acquisition time=4Tad, A/D Conversion Clock source Fosc/16
     ADCON2 = 0x95;
