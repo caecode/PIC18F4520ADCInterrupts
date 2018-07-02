@@ -71,6 +71,22 @@
 
 #define _XTAL_FREQ 20000000
 
+void interrupt isr(void){
+    
+    //ADC interrupt flag
+    if(PIR1bits.ADIF==1){
+        
+        PIR1bits.ADIF=0;
+        
+        // Conversion finished, return the result. Light the LEDs
+        LATD=((ADRESH << 8) + ADRESL);
+        
+        ADCON0bits.GO_DONE=1;
+    }
+    
+    
+}
+
 void main(void) {
      
     //Set TRISA0 as input
@@ -93,23 +109,30 @@ void main(void) {
     ADRESL = 0x00;
 
     ADRESH = 0x00;
-
+    
+    //Enable global interrupts
+    INTCONbits.GIE=1;
+    
+    //Enable peripheral interrupts
+    INTCONbits.PEIE=1;
+    
+    //Enable ADC interrupt
+    PIE1bits.ADIE=1;
+    
+    //set ADC interrupt priority to low
+    IPR1bits.ADIP=0;
+    
+    //Disable interrupt priorities
+    RCONbits.IPEN=0;
+    
     // Turn on the ADC module
     ADCON0bits.ADON = 1;
              
-    while(1){
-       
-        __delay_us(10); //acquisition delay of 8us
+    __delay_us(10); //acquisition delay of 8us
 
-        // Start the conversion
-        ADCON0bits.GO_nDONE = 1;
-
-        // Wait for the conversion to finish
-        while (ADCON0bits.GO_nDONE) ;
-
-        // Conversion finished, return the result. Light the LEDs
-        LATD=((ADRESH << 8) + ADRESL);
+    // Start the conversion
+    ADCON0bits.GO_nDONE = 1;
         
-    }
+    while(1);
     
 }
