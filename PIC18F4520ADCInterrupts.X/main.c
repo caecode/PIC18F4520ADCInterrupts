@@ -1,6 +1,6 @@
 /*
  * File:   main.c
- * Author: c13321
+ * Author: 
  *
  * Created on June 22, 2018, 8:56 AM
  */
